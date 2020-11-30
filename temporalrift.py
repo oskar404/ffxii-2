@@ -78,25 +78,49 @@ def search(start, clock):
 
 
 def solve(args):
-    if args.verbose > 0:
-        print(f'Clock: {args.clock}')
+    if args.verbose >= 3:
+        print(f'args: {args}')
+    if args.verbose >= 2:
+        print(f'clock: {args.clock}')
+
     # Brute force solving. search all possible solutions
+    found_solution = False
     for start_point in range(len(args.clock)):
         paths = search(start_point, args.clock)
+
         for path in paths:
             is_solution = len(path) == len(args.clock)
-            if args.verbose > 0 or is_solution:
+            if args.verbose >= 2 or is_solution:
                 solution = ''
-                if is_solution and args.verbose > 0:
-                    solution = ' SOLUTION'
+                if is_solution:
+                    found_solution = True
+                if is_solution and args.verbose >= 2:
+                    solution = ' [SOLUTION]'
                 human_path = [ f"{pos+1}({step})" for pos, step in path]
-                print(f"path: {' > '.join(human_path)}{solution}")
+                print(f"{' > '.join(human_path)}{solution}")
+                if args.verbose == 0:
+                    break # print only first solution
+
+        if args.verbose == 0 and found_solution:
+            break # print only first solution
 
 
-def validate(clock):
-    assert len(clock) <= 12, 'Maximum number of elements in clock is 12'
-    invalid = [x for x in clock if x > 6 or x < 1]
+def validate_args(args):
+    assert len(args.clock) <= 12, 'Maximum number of elements in clock is 12'
+    invalid = [x for x in args.clock if x > 6 or x < 1]
     assert len(invalid) == 0, 'Supported numbers are from 1 to 6'
+
+
+def configure_verbosity(args):
+    # verbosity levels:
+    # 0: only first solution
+    # 1: all solutions
+    # 2: all paths
+    # 3: args
+    if args.verbose == 0 and args.all:
+        args.verbose = 1
+    elif args.verbose > 0:
+        args.verbose = args.verbose + 1
 
 
 def create_parser():
@@ -109,8 +133,14 @@ def create_parser():
         type=int,
         nargs='+')
     parser.add_argument(
+        '-a', '--all', '--all-solutions',
+        help='Print all found solutions',
+        action='store_true',
+        dest='all',
+        default=False)
+    parser.add_argument(
         '-v', '--verbose',
-        help='Add verbosity i.e print more than just solutions',
+        help='Add verbosity i.e print more than just one solution',
         action='count',
         default=0)
     return parser
@@ -119,7 +149,8 @@ def create_parser():
 def main():
     parser = create_parser()
     args = parser.parse_args()
-    validate(args.clock)
+    validate_args(args)
+    configure_verbosity(args)
     solve(args)
 
 
