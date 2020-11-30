@@ -7,7 +7,7 @@ import argparse
 
 
 class Node:
-    def __init__(self, position, parent = None):
+    def __init__(self, position, parent=None):
         self.pos = position
         self.parent = parent
         self.left = None
@@ -79,9 +79,9 @@ def search(start, clock):
 
 def solve(args):
     if args.verbose >= 3:
-        print(f'args: {args}')
+        print(f"args: {args}")
     if args.verbose >= 2:
-        print(f'clock: {args.clock}')
+        print(f"clock: {args.clock}")
 
     # Brute force solving. search all possible solutions
     found_solution = False
@@ -91,24 +91,24 @@ def solve(args):
         for path in paths:
             is_solution = len(path) == len(args.clock)
             if args.verbose >= 2 or is_solution:
-                solution = ''
+                solution = ""
                 if is_solution:
                     found_solution = True
                 if is_solution and args.verbose >= 2:
-                    solution = ' [SOLUTION]'
-                human_path = [ f"{pos+1}({step})" for pos, step in path]
+                    solution = " [SOLUTION]"
+                human_path = [f"{pos+1}({step})" for pos, step in path]
                 print(f"{' > '.join(human_path)}{solution}")
                 if args.verbose == 0:
-                    break # print only first solution
+                    break  # print only first solution
 
         if args.verbose == 0 and found_solution:
-            break # print only first solution
+            break  # print only first solution
 
 
 def validate_args(args):
-    assert len(args.clock) <= 12, 'Maximum number of elements in clock is 12'
+    assert len(args.clock) <= 12, "Maximum number of elements in clock is 12"
     invalid = [x for x in args.clock if x > 6 or x < 1]
-    assert len(invalid) == 0, 'Supported numbers are from 1 to 6'
+    assert len(invalid) == 0, "Supported numbers are from 1 to 6"
 
 
 def configure_verbosity(args):
@@ -126,23 +126,31 @@ def configure_verbosity(args):
 def create_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        'clock',
-        help=('Number describing how to jump to next position. '
-              ' Supported numbers from 1 to 6. Maximum list size is 12'),
-        metavar='NUMBER',
+        "clock",
+        help=(
+            "Number describing how to jump to next position. "
+            " Supported numbers from 1 to 6. Maximum list size is 12"
+        ),
+        metavar="NUMBER",
         type=int,
-        nargs='+')
+        nargs="+",
+    )
     parser.add_argument(
-        '-a', '--all', '--all-solutions',
-        help='Print all found solutions',
-        action='store_true',
-        dest='all',
-        default=False)
+        "-a",
+        "--all",
+        "--all-solutions",
+        help="Print all found solutions",
+        action="store_true",
+        dest="all",
+        default=False,
+    )
     parser.add_argument(
-        '-v', '--verbose',
-        help='Add verbosity i.e print more than just one solution',
-        action='count',
-        default=0)
+        "-v",
+        "--verbose",
+        help="Add verbosity i.e print more than just one solution",
+        action="count",
+        default=0,
+    )
     return parser
 
 
